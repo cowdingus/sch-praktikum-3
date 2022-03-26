@@ -11,7 +11,7 @@ import gulaikambing from "./assets/gulai-kambing.jpg";
 import {useState} from "react";
 
 function App() {
-  const [menu, setMenu] = useState([
+  const [menu, _setMenu] = useState([
     {
       image: ayamgoyeng,
       title: "Ayam Goreng",
@@ -44,22 +44,52 @@ function App() {
     },
   ]);
 
-  const [isCartOpen, setIsCartOpen] = useState(true);
-  const [cart, setCart] = useState([]);
+  const [isCartOpen, _setIsCartOpen] = useState(true);
+  const [cart, setCart] = useState({});
 
   const addIntoCart = (productTitle, quantity) => {
-    setCart([...cart, {title: productTitle, quantity}]);
+    if (cart.hasOwnProperty(productTitle)) {
+      return setCart({...cart, [productTitle]: cart[productTitle] + (quantity ?? 1)});
+    }
+
+    setCart({...cart, [productTitle]: quantity ?? 1});
   }
 
-  const decrementInCart = (productTitle) => {
-    setCart();
+  const takeOutFromCart = (productTitle, quantity) => {
+    quantity = quantity ?? 1;
+
+    if (cart.hasOwnProperty(productTitle)) {
+      if (cart[productTitle] - quantity > 0) {
+        return setCart({...cart, [productTitle]: cart[productTitle] - quantity});
+      }
+
+      const newCart = {...cart};
+      delete newCart[productTitle];
+
+      setCart(newCart);
+    }
+
+    console.warn("Item doesn't exist in cart to be decremented");
+  }
+
+  const getPriceOfMenu = (productTitle) => {
+    const index = menu.findIndex((item) => item.title === productTitle);
+
+    if (index === -1) {
+      console.warn("Product doesn't exist inside the menu for the price to be fetched");
+      return -1;
+    }
+
+    return menu[index].price;
   }
 
   return (
     <div className="flex items-stretch min-h-screen bg-stone-100">
-      <Sidebar cart={cart} />
-      <Main menu={menu} cart={cart} />
-      {isCartOpen ? <Cart /> : ""}
+      <Sidebar menu={menu} cart={cart} />
+      <div className="flex flex-wrap items-stretch min-h-screen grow">
+        <Main menu={menu} cart={cart} addIntoCart={addIntoCart} />
+        {isCartOpen ? <Cart cart={cart} getPriceOfMenu={getPriceOfMenu} takeOutFromCart={takeOutFromCart}/> : ""}
+      </div>
     </div>
   )
 }

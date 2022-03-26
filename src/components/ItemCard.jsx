@@ -18,7 +18,7 @@ function getRatingStars(rating) {
 
 export default function ItemCard({ image, title, price, rating }) {
   return (
-    <div className="w-56 overflow-hidden bg-white rounded-lg shadow-md hover:scale-[1.01] transition-transform text-slate-800">
+    <div className="overflow-hidden bg-white rounded-lg shadow-md hover:scale-[1.01] transition-transform text-slate-800 w-54">
       <img src={image} alt="" className="rounded-lg max-h-48" />
       <div className="px-3 pt-3 pb-4">
         <h4 className="mb-2 text-lg font-semibold leading-tight">{title}</h4>
